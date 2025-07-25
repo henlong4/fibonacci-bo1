@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가보자 피보나치 시스템 시작</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f2f5; /* Light mode default */
+            color: #333; /* Light mode default */
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s; /* Smooth transition for dark mode */
+        }
+        body.dark-mode {
+            background-color: #212121; /* Dark background */
+            color: #e0e0e0; /* Light text */
+        }
+        .container {
+            background-color: #fff; /* Light mode default */
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition */
+        }
+        body.dark-mode .container {
+            background-color: #333333; /* Darker container */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        h1 {
+            color: #1a237e; /* Light mode default */
+            margin-bottom: 1.5rem;
+            transition: color 0.3s;
+        }
+        body.dark-mode h1 {
+            color: #9fa8da; /* Lighter blue for dark mode */
+        }
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #555; /* Light mode default */
+            transition: color 0.3s;
+        }
+        body.dark-mode .input-group label {
+            color: #bbbbbb; /* Lighter gray for dark mode */
+        }
+        .input-group input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ddd; /* Light mode default */
+            border-radius: 5px;
+            font-size: 1rem;
+            text-align: center;
+            background-color: #fff; /* Light mode default */
+            color: #333; /* Light mode default */
+            transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+        }
+        body.dark-mode .input-group input {
+            border: 1px solid #555; /* Darker border */
+            background-color: #444444; /* Darker input background */
+            color: #e0e0e0; /* Lighter text */
+        }
+        .info-display {
+            background-color: #e8eaf6; /* Light mode default */
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            transition: background-color 0.3s;
+        }
+        body.dark-mode .info-display {
+            background-color: #424242; /* Darker info background */
+        }
+        .info-display h2 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            color: #3f51b5; /* Light mode default */
+            transition: color 0.3s;
+        }
+        body.dark-mode .info-display h2 {
+            color: #c5cae9; /* Lighter blue for dark mode */
+        }
+        .info-display p {
+            margin: 0.5rem 0;
+            font-size: 1.1rem;
+        }
+        #profit {
+            font-weight: bold;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 1.5rem;
+        }
+        .buttons button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        #win-btn {
+            background-color: #4caf50;
+            color: white;
+        }
+        #win-btn:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+        #lose-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        #lose-btn:hover {
+            background-color: #e53935;
+            transform: translateY(-2px);
+        }
+        #reset-btn, #start-btn { /* 시작 버튼 스타일 추가 */
+            background-color: #757575; /* Light mode default */
+            color: white;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 0.5rem; /* 버튼 간격 조정 */
+        }
+        body.dark-mode #reset-btn, body.dark-mode #start-btn { /* 다크 모드 시작 버튼 스타일 추가 */
+            background-color: #616161; /* Darker reset/start button */
+        }
+        #reset-btn:hover, #start-btn:hover { /* 시작 버튼 호버 스타일 추가 */
+            background-color: #616161; /* Light mode hover */
+        }
+        body.dark-mode #reset-btn:hover, body.dark-mode #start-btn:hover { /* 다크 모드 시작 버튼 호버 스타일 추가 */
+            background-color: #757575; /* Dark mode hover */
+        }
+        #start-btn {
+            background-color: #2196f3; /* 시작 버튼 고유 색상 */
+        }
+        #start-btn:hover {
+            background-color: #1976d2;
+        }
+        #history {
+            margin-top: 1.5rem;
+            text-align: left;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #eee; /* Light mode default */
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+        body.dark-mode #history {
+            border: 1px solid #555; /* Darker border */
+            background-color: #424242; /* Darker history background */
+        }
+        #history h3 {
+            margin-top: 0;
+            color: #555; /* Light mode default */
+            transition: color 0.3s;
+        }
+        body.dark-mode #history h3 {
+            color: #bbbbbb; /* Lighter gray for dark mode */
+        }
+        #history p {
+            margin: 4px 0;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #f0f0f0; /* Light mode default */
+            padding-bottom: 4px;
+            transition: border-color 0.3s;
+        }
+        body.dark-mode #history p {
+            border-bottom: 1px solid #555; /* Darker border for history items */
+        }
+        .win-log { color: #4caf50; }
+        .lose-log { color: #f44336; }
+        .disclaimer {
+            font-size: 0.75rem;
+            color: #999; /* Light mode default */
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee; /* Light mode default */
+            transition: color 0.3s, border-top-color 0.3s;
+        }
+        body.dark-mode .disclaimer {
+            color: #888; /* Darker gray for dark mode */
+            border-top: 1px solid #555; /* Darker border */
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    <div class="container">
+        <h1>가보자 피보나치 시스템🎲</h1>
+        <div class="input-group">
+            <label for="base-bet">기본 배팅 단위 (원)</label>
+            <input type="number" id="base-bet" value="1000">
+        </div>
+
+        <div class="info-display">
+            <h2>다음 배팅액</h2>
+            <p id="current-bet">0 원</p>
+            <p><strong>총 손익:</strong> <span id="profit">0 원</span></p>
+        </div>
+
+        <div class="buttons">
+            <button id="win-btn" disabled>승리 (x2 배당)</button>
+            <button id="lose-btn" disabled>패배</button>
+        </div>
+
+        <button id="start-btn">시작</button> <button id="reset-btn">초기화</button>
+
+
+        <div id="history">
+            <h3>배팅 기록</h3>
+            <div id="history-log"></div>
+        </div>
+
+        <div class="disclaimer">
+            <p><strong>[책임 고지]</strong> 본 시스템은 배팅 전략 시뮬레이션을 위한 교육 및 참고 목적으로만 제공됩니다. 본 시스템의 이용으로 발생하는 모든 결과에 대한 법적·재정적 책임은 이용자 본인에게 있으며, 운영자는 일체의 법적 책임을 지지 않습니다.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const baseBetInput = document.getElementById('base-bet');
+            const currentBetDisplay = document.getElementById('current-bet');
+            const profitDisplay = document.getElementById('profit');
+            const winBtn = document.getElementById('win-btn');
+            const loseBtn = document.getElementById('lose-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const startBtn = document.getElementById('start-btn');
+            const historyLog = document.getElementById('history-log');
+
+            let baseBet = 1000;
+            let profit = 0;
+            let fibSequence = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55];
+            let sequenceIndex = 0;
+            let isSimulationActive = false;
+
+            function updateDisplay() {
+                const currentBetValue = fibSequence[sequenceIndex] * baseBet;
+                currentBetDisplay.textContent = `${currentBetValue.toLocaleString()} 원`;
+                profitDisplay.textContent = `${profit.toLocaleString()} 원`;
+
+                if (profit < 0) {
+                    profitDisplay.style.color = '#f44336';
+                } else if (profit > 0) {
+                    profitDisplay.style.color = '#4caf50';
+                } else {
+                    profitDisplay.style.color = document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#333';
+                }
+            }
+
+            function logHistory(betAmount, result) {
+                const p = document.createElement('p');
+                const outcomeText = result === 'win' ? '승리' : '패배';
+                const amountChange = result === 'win' ? `+${(betAmount).toLocaleString()}` : `-${betAmount.toLocaleString()}`;
+                p.innerHTML = `배팅액: ${betAmount.toLocaleString()}원 - <strong>결과: ${outcomeText}</strong> (${amountChange}원)`;
+                p.className = result === 'win' ? 'win-log' : 'lose-log';
+                historyLog.insertBefore(p, historyLog.firstChild);
+            }
+
+            function enableSimulationButtons(enable) {
+                winBtn.disabled = !enable;
+                loseBtn.disabled = !enable;
+            }
+
+            function reset() {
+                baseBet = parseInt(baseBetInput.value) || 1000;
+                if (baseBet <= 0) {
+                    alert("기본 배팅 단위는 0보다 커야 합니다.");
+                    baseBet = 1000;
+                    baseBetInput.value = "1000";
+                }
+                profit = 0;
+                sequenceIndex = 0;
+                historyLog.innerHTML = '';
+                isSimulationActive = false;
+                enableSimulationButtons(false);
+                startBtn.style.display = 'block';
+                updateDisplay();
+            }
+
+            function startSimulation() {
+                if (isSimulationActive) return;
+
+                baseBet = parseInt(baseBetInput.value) || 1000;
+                if (baseBet <= 0) {
+                    alert("기본 배팅 단위는 0보다 커야 합니다.");
+                    baseBet = 1000;
+                    baseBetInput.value = "1000";
+                    return;
+                }
+
+                profit = 0;
+                sequenceIndex = 0;
+                historyLog.innerHTML = '';
+                isSimulationActive = true;
+                enableSimulationButtons(true);
+                startBtn.style.display = 'none';
+                updateDisplay();
+            }
+
+            winBtn.addEventListener('click', () => {
+                if (!isSimulationActive) return;
+                const currentBetValue = fibSequence[sequenceIndex] * baseBet;
+                profit += currentBetValue;
+                logHistory(currentBetValue, 'win');
+                sequenceIndex = Math.max(0, sequenceIndex - 2);
+                updateDisplay();
+            });
+
+            loseBtn.addEventListener('click', () => {
+                if (!isSimulationActive) return;
+                const currentBetValue = fibSequence[sequenceIndex] * baseBet;
+                profit -= currentBetValue;
+                logHistory(currentBetValue, 'lose');
+
+                if (sequenceIndex < fibSequence.length - 1) {
+                    sequenceIndex++;
+                } else {
+                    const nextFib = fibSequence[fibSequence.length - 1] + fibSequence[fibSequence.length - 2];
+                    fibSequence.push(nextFib);
+                    sequenceIndex++;
+                }
+                updateDisplay();
+            });
+
+            resetBtn.addEventListener('click', reset);
+            startBtn.addEventListener('click', startSimulation);
+            baseBetInput.addEventListener('change', reset);
+
+            reset();
+        });
+    </script>
+
+</body>
+</html>
